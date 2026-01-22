@@ -4,4 +4,5 @@ metadata:
   name: {{ .Values.namespace }}
   labels:
     app: music-man
+    istio-injection: disabled
     managed-by: helm
