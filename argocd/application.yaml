@@ -9,9 +9,9 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/snothub/literate-octo-guacamole.git
-    targetRevision: feature/db
-    path: kubernetes/helm-chart
+    repoURL: https://github.com/snothub/scaling-parakeet.git
+    targetRevision: HEAD
+    path: helm-chart
 
     helm:
       valueFiles:
