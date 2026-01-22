@@ -1,0 +1,79 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  source:
+    repoURL: https://charts.jetstack.io
+    chart: cert-manager
+    targetRevision: "v1.14.0"
+
+    helm:
+      values: |
+        # Install CustomResourceDefinitions
+        installCRDs: true
+
+        # Global configuration
+        global:
+          leaderElection:
+            namespace: cert-manager
+
+        # Webhook configuration
+        webhook:
+          enabled: true
+          replicaCount: 1
+          timeoutSeconds: 10
+
+        # CA Injector
+        caInjector:
+          enabled: true
+          replicaCount: 1
+
+        # Security context
+        podSecurityPolicy:
+          enabled: false
+
+        # Resources
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+
+        # Service account
+        serviceAccount:
+          create: true
+          name: cert-manager
+
+        # Enable debug logging if needed (set to false for production)
+        logLevel: 2
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+
+    syncOptions:
+    - CreateNamespace=true
+    - Validate=true
+    - ServerSideApply=false
+    - Replace=false
+
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
