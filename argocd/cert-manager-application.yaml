@@ -69,6 +69,7 @@ spec:
     server: https://kubernetes.default.svc
     namespace: cert-manager
 
+  # Patch namespace to disable Istio injection
   syncPolicy:
     automated:
       prune: true

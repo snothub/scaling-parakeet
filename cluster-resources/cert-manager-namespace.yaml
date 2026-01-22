@@ -1,0 +1,9 @@
+---
+# Disable Istio sidecar injection for cert-manager namespace
+# This is required for cert-manager to function properly with Istio
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager
+  labels:
+    istio-injection: disabled

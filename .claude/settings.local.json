@@ -8,7 +8,12 @@
       "Bash(then echo \".cursorrules found\")",
       "Bash(if [ -f .github/copilot-instructions.md ])",
       "Bash(then echo \".github/copilot-instructions.md found\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(kubectl get:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl delete:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl label:*)"
     ]
   }
 }
