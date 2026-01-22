@@ -11,52 +11,35 @@ spec:
   source:
     repoURL: https://traefik.github.io/charts
     chart: traefik
-    targetRevision: "28.0.0"  # Traefik v3.x compatible
+    targetRevision: "28.0.0"
 
     helm:
       values: |
-        # Deployment configuration
         deployment:
           replicas: 2
 
-        # Service configuration - LoadBalancer for Azure
         service:
           type: LoadBalancer
           annotations:
             service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /ping
 
-        # Global arguments
-        globalArguments:
-        - "--global.checknewversion"
-        - "--api.dashboard=false"
-
-        # Entry points configuration
-        ports:
-          http:
-            port: 80
-            expose: true
-            exposedPort: 80
-            protocol: TCP
-            redirectTo:
-              entryPoint: websecure
-          websecure:
-            port: 443
-            expose: true
-            exposedPort: 443
-            protocol: TCP
-            tls:
-              enabled: true
-
-        # Ingress class
         ingressClass:
           enabled: true
           isDefaultClass: true
 
-        # Security context
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 65532
-          fsGroup: 65532
+        # Configure entry points
+        entryPoints:
+          web:
+            address: :80
+            http:
+              redirections:
+                entrypoint:
+                  to: websecure
+                  scheme: https
+          websecure:
+            address: :443
+            http:
+              tls: {}
 
   destination:
     server: https://kubernetes.default.svc
