@@ -7,7 +7,8 @@
       "Bash(if [ -f .cursorrules ])",
       "Bash(then echo \".cursorrules found\")",
       "Bash(if [ -f .github/copilot-instructions.md ])",
-      "Bash(then echo \".github/copilot-instructions.md found\")"
+      "Bash(then echo \".github/copilot-instructions.md found\")",
+      "Bash(git commit:*)"
     ]
   }
 }

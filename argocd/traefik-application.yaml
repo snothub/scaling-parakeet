@@ -15,34 +15,28 @@ spec:
 
     helm:
       values: |
-        # Traefik configuration
+        # Deployment configuration
         deployment:
           replicas: 2
-          podSecurityPolicy:
-            enabled: false
 
-        # Service configuration
+        # Service configuration - LoadBalancer for Azure
         service:
           type: LoadBalancer
-          spec:
-            loadBalancerSourceRanges: []
           annotations:
             service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /ping
 
-        # Global configuration
+        # Global arguments
         globalArguments:
         - "--global.checknewversion"
         - "--api.dashboard=false"
-        - "--entryPoints.ping.address=:8082"
 
-        # Entry points
+        # Entry points configuration
         ports:
           http:
             port: 80
             expose: true
             exposedPort: 80
             protocol: TCP
-            # Redirect HTTP to HTTPS
             redirectTo:
               entryPoint: websecure
           websecure:
@@ -52,25 +46,14 @@ spec:
             protocol: TCP
             tls:
               enabled: true
-          ping:
-            port: 8082
-            expose: false
-            protocol: TCP
 
-        # Ingressclass setup
+        # Ingress class
         ingressClass:
           enabled: true
           isDefaultClass: true
 
-        # Metrics
-        metrics:
-          prometheus:
-            addEntryPointsLabels: true
-            addServicesLabels: true
-
-        # Security
-        priorityClassName: system-cluster-critical
-        podSecurityContext:
+        # Security context
+        securityContext:
           runAsNonRoot: true
           runAsUser: 65532
           fsGroup: 65532
