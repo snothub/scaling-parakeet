@@ -30,7 +30,7 @@ spec:
           enabled: true
           className: traefik
           annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-prod
+            cert-manager.io/cluster-issuer: letsencrypt-staging
           hosts:
             - host: music-man.duckdns.org
               paths:
