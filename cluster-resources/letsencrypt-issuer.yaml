@@ -12,7 +12,6 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-staging-key
     solvers:
-    # HTTP-01 challenge via Traefik ingress
     - http01:
         ingress:
           class: traefik
@@ -31,7 +30,6 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod-key
     solvers:
-    # HTTP-01 challenge via Traefik ingress
     - http01:
         ingress:
           class: traefik
