@@ -13,7 +13,9 @@
       "Bash(kubectl logs:*)",
       "Bash(kubectl delete:*)",
       "Bash(kubectl describe:*)",
-      "Bash(kubectl label:*)"
+      "Bash(kubectl label:*)",
+      "Bash(echo \"ArgoCD command not available, trying kubectl patch instead\" echo \"Waiting 10 seconds...\" sleep 10 echo \"\" echo \"=== Check certificate issuer ===\" kubectl get certificate -n music-man -o jsonpath='{.items[0].spec.issuerRef.name}' echo \"\" echo \"=== If still showing prod, delete ingress to recreate ===\" kubectl delete ingress music-man-ingress -n music-man)",
+      "Bash(git push:*)"
     ]
   }
 }
