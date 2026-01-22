@@ -32,14 +32,14 @@ spec:
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-staging
           hosts:
-            - host: music-man.duckdns.org
+            - host: music-man.mywire.org
               paths:
                 - path: /
                   pathType: Prefix
           tls:
             - secretName: music-man-tls
               hosts:
-                - music-man.duckdns.org
+                - music-man.mywire.org
 
       parameters:
       - name: secrets.databasePassword
