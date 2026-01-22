@@ -8,9 +8,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/snothub/literate-octo-guacamole.git
-    targetRevision: feature/db
-    path: kubernetes/argocd
+    repoURL: https://github.com/snothub/scaling-parakeet.git
+    targetRevision: HEAD
+    path: argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: music-man
