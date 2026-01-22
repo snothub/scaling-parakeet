@@ -21,7 +21,7 @@ spec:
         app:
           image:
             repository: danijels/music-man
-            tag: v3.1  # Updated automatically by GitHub Actions on release
+            tag: v3.1.1  # Updated automatically by GitHub Actions on release
           env:
             spotifyClientId: "011c5f27eef64dd0b6f65ca673215a58"
 
