@@ -1,0 +1,119 @@
+# Default values for music-man Helm chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+namespace: music-man
+imagePullPolicy: IfNotPresent
+
+# Unified app (frontend + backend)
+app:
+  enabled: true
+  name: app
+  replicaCount: 1
+  image:
+    repository: danijels/music-man
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 4000
+    targetPort: 4000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  env:
+    port: "4000"
+    spotifyClientId: "011c5f27eef64dd0b6f65ca673215a58"
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 4000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 4000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+
+# PostgreSQL database configuration
+database:
+  enabled: true
+  name: postgres
+  image:
+    repository: postgres
+    tag: "16-alpine"
+  service:
+    type: ClusterIP
+    port: 5432
+    targetPort: 5432
+  persistence:
+    enabled: true
+    storageClass: "" # Use default storage class
+    accessMode: ReadWriteOnce
+    size: 10Gi
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  env:
+    user: spotify_user
+    database: spotify_db
+    # Password should be set via secret
+  livenessProbe:
+    exec:
+      command:
+      - pg_isready
+      - -U
+      - spotify_user
+      - -d
+      - spotify_db
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readinessProbe:
+    exec:
+      command:
+      - pg_isready
+      - -U
+      - spotify_user
+      - -d
+      - spotify_db
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Ingress configuration (optional)
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # Add more annotations as needed
+  hosts:
+  - host: music-man.example.com
+    paths:
+    - path: /
+      pathType: Prefix
+  tls:
+  - secretName: music-man-tls
+    hosts:
+    - music-man.example.com
+
+# Secrets
+secrets:
+  # Database password (override with --set or in values-prod.yaml)
+  databasePassword: "changeme-insecure-default"
+  # JWT secret for backend (not used currently but included for future)
+  jwtSecret: "changeme-insecure-default"
+
+# ConfigMap settings
+config:
+  # Additional configuration can be added here
+  logLevel: info

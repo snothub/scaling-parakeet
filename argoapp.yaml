@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: musicman
+  namespace: argocd
+  labels:
+    scope: music-man
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/snothub/literate-octo-guacamole.git
+    targetRevision: feature/db
+    path: kubernetes/argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: music-man
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

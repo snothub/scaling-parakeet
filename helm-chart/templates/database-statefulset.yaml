@@ -1,0 +1,79 @@
+{{- if .Values.database.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.database.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: music-man
+    component: database
+spec:
+  serviceName: {{ .Values.database.name }}
+  replicas: 1
+  selector:
+    matchLabels:
+      app: music-man
+      component: database
+  template:
+    metadata:
+      labels:
+        app: music-man
+        component: database
+    spec:
+      containers:
+      - name: postgres
+        image: "{{ .Values.database.image.repository }}:{{ .Values.database.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - name: postgresql
+          containerPort: {{ .Values.database.service.targetPort }}
+          protocol: TCP
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: music-man-config
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: music-man-secrets
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: music-man-config
+              key: DB_NAME
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          {{- toYaml .Values.database.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.database.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.database.readinessProbe | nindent 10 }}
+  {{- if .Values.database.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+      labels:
+        app: music-man
+        component: database
+    spec:
+      accessModes:
+        - {{ .Values.database.persistence.accessMode }}
+      {{- if .Values.database.persistence.storageClass }}
+      storageClassName: {{ .Values.database.persistence.storageClass }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.database.persistence.size }}
+  {{- else }}
+      volumes:
+      - name: postgres-data
+        emptyDir: {}
+  {{- end }}
+{{- end }}

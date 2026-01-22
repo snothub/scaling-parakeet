@@ -1,0 +1,21 @@
+{{- if .Values.database.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.database.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: music-man
+    component: database
+spec:
+  type: {{ .Values.database.service.type }}
+  clusterIP: None  # Headless service for StatefulSet
+  ports:
+  - port: {{ .Values.database.service.port }}
+    targetPort: {{ .Values.database.service.targetPort }}
+    protocol: TCP
+    name: postgresql
+  selector:
+    app: music-man
+    component: database
+{{- end }}

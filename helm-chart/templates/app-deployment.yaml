@@ -1,0 +1,57 @@
+{{- if .Values.app.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: music-man
+    component: app
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: music-man
+      component: app
+  template:
+    metadata:
+      labels:
+        app: music-man
+        component: app
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: postgres:16-alpine
+        command:
+        - sh
+        - -c
+        - |
+          until pg_isready -h postgres -U {{ .Values.database.env.user }} -d {{ .Values.database.env.database }}; do
+            echo "Waiting for database..."
+            sleep 2
+          done
+      containers:
+      - name: app
+        image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.app.service.targetPort }}
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "{{ .Values.app.env.port }}"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: music-man-secrets
+              key: DATABASE_URL
+        - name: VITE_SPOTIFY_CLIENT_ID
+          value: "{{ .Values.app.env.spotifyClientId }}"
+        resources:
+          {{- toYaml .Values.app.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.app.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.app.readinessProbe | nindent 10 }}
+{{- end }}
