@@ -28,11 +28,21 @@ spec:
           enabled: true
           replicaCount: 1
           timeoutSeconds: 10
+          # Disable Istio sidecar injection for webhook to avoid mTLS issues
+          podAnnotations:
+            sidecar.istio.io/inject: "false"
 
         # CA Injector
         caInjector:
           enabled: true
           replicaCount: 1
+          # Disable Istio sidecar injection for CA injector
+          podAnnotations:
+            sidecar.istio.io/inject: "false"
+
+        # Disable Istio sidecar for main controller pods
+        podAnnotations:
+          sidecar.istio.io/inject: "false"
 
         # Security context
         podSecurityPolicy:

@@ -1,0 +1,9 @@
+---
+# Disable Istio sidecar injection for music-man namespace
+# This allows cert-manager HTTP-01 solver to communicate with Traefik
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: music-man
+  labels:
+    istio-injection: disabled
