@@ -19,7 +19,7 @@ spec:
       values: |
         app:
           image:
-            tag: v3.4.4  # Updated automatically by GitHub Actions on release
+            tag: v3.4.5  # Updated automatically by GitHub Actions on release
 
       parameters:
       - name: secrets.databasePassword
