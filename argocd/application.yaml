@@ -17,29 +17,9 @@ spec:
       valueFiles:
       - values.yaml
       values: |
-        # Override Docker Hub username
         app:
           image:
-            repository: danijels/music-man
             tag: v3.4.3  # Updated automatically by GitHub Actions on release
-          env:
-            spotifyClientId: "011c5f27eef64dd0b6f65ca673215a58"
-
-        # Ingress configuration (optional)
-        ingress:
-          enabled: true
-          className: traefik
-          annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-prod
-          hosts:
-            - host: music-man.mywire.org
-              paths:
-                - path: /
-                  pathType: Prefix
-          tls:
-            - secretName: music-man-tls
-              hosts:
-                - music-man.mywire.org
 
       parameters:
       - name: secrets.databasePassword
