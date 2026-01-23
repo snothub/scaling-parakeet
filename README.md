@@ -75,87 +75,15 @@ infra/
 
 ## Common Commands
 
-### Helm Operations
-
-```bash
-# Install or upgrade Music Man application only
-helm install music-man ./helm-chart --namespace music-man --create-namespace
-helm upgrade music-man ./helm-chart --namespace music-man
-
-# Install with custom values
-helm install music-man ./helm-chart \
-  --set secrets.databasePassword="your-secure-password" \
-  --values values-prod.yaml
-
-# Verify deployment
-helm list -n music-man
-helm status music-man -n music-man
-helm get values music-man -n music-man
-
-# Uninstall Music Man only
-helm uninstall music-man -n music-man
-```
-
 ### ArgoCD Infrastructure Deployment (Cluster-wide)
 
 ```bash
-# Deploy cluster infrastructure via ArgoCD (one-time)
-kubectl apply -f argocd/traefik-application.yaml
-kubectl apply -f argocd/cert-manager-application.yaml
-kubectl apply -f argocd/cluster-resources-application.yaml
-
-# Or deploy the main Music Man application
-kubectl apply -f argocd/application.yaml
-
-# Check application status
-argocd app get music-man
-argocd app get traefik
-argocd app get cert-manager
-argocd app get cluster-resources
-
-# Sync applications (if not auto-syncing)
-argocd app sync music-man
-argocd app sync traefik --force
-argocd app sync cert-manager --force
-argocd app sync cluster-resources --force
+# Deploy cluster infrastructure via ArgoCD (one-time app-of-apps approach)
+kubectl apply -f argoapp.yaml
 
 # View ArgoCD UI
 kubectl port-forward svc/argocd-server -n argocd 8080:443
 # Access: https://localhost:8080 (admin / <password-from-secret>)
-```
-
-### Kubernetes Debugging
-
-```bash
-# Check all resources in music-man
-kubectl get all -n music-man
-
-# Monitor pods
-kubectl get pods -n music-man -w
-kubectl describe pod <pod-name> -n music-man
-kubectl logs -f deployment/app -n music-man
-
-# Check Traefik status
-kubectl get pods -n traefik-system
-kubectl get svc traefik -n traefik-system  # Get LoadBalancer IP
-kubectl logs -n traefik-system -l app.kubernetes.io/name=traefik --tail=50
-
-# Check cert-manager status
-kubectl get pods -n cert-manager
-kubectl get clusterissuer
-kubectl describe clusterissuer letsencrypt-prod
-
-# Check certificate status
-kubectl get certificate -n music-man
-kubectl describe certificate music-man-tls -n music-man
-
-# Database access
-kubectl exec -it statefulset/postgres -n music-man -- \
-  psql -U spotify_user -d spotify_db
-
-# Database backup/restore
-kubectl exec -it postgres-0 -n music-man -- \
-  pg_dump -U spotify_user spotify_db > backup.sql
 ```
 
 ### HTTPS Certificate Management
@@ -389,7 +317,7 @@ letsencrypt-prod:
 The application uses **semantic versioning** with GitHub Actions automation:
 
 1. **Development:** Uses `latest` tag (in `values.yaml`)
-2. **Release:** Create a version tag (`git tag v1.0.1 && git push origin v1.0.1`)
+2. **Release:** Create a version tag (`git tag v1.0.1 && git push --tags`)
 3. **CI/CD:** GitHub Actions automatically:
    - Builds and pushes image with version tag to Docker Hub
    - Updates `image.tag` in `argocd/application.yaml`
@@ -624,19 +552,6 @@ kubectl exec -it deployment/app -n music-man -- nc -zv postgres 5432
 kubectl get secret music-man-secrets -n music-man -o yaml | grep DATABASE_URL
 ```
 
-**Image pull errors:**
-```bash
-# Verify image exists
-docker pull danijels/music-man:v3.4.5
-
-# Create pull secret if using private registry
-kubectl create secret docker-registry regcred \
-  --docker-server=docker.io \
-  --docker-username=<username> \
-  --docker-password=<password> \
-  -n music-man
-```
-
 ### Traefik Issues
 
 **LoadBalancer IP not assigned:**
@@ -717,34 +632,6 @@ kubectl label namespace cert-manager istio-injection=disabled --overwrite
 kubectl delete pods --all -n cert-manager  # Force pod restart
 ```
 
-### ArgoCD Sync Issues
-
-**Application sync failing:**
-```bash
-# Check application status
-argocd app get music-man
-argocd app get music-man --show-operation
-
-# See sync error details
-argocd app get music-man --refresh
-
-# Force sync (useful after fixing issues)
-argocd app sync music-man --force
-
-# Refresh to re-check Git repository
-argocd app refresh music-man
-```
-
-**Helm template rendering errors:**
-```bash
-# Test Helm template locally
-helm template music-man ./helm-chart --namespace music-man
-
-# Test with ArgoCD values
-helm template music-man ./helm-chart \
-  --values <(echo "app:\n  image:\n    tag: v3.4.5")
-```
-
 ## Important Notes
 
 - **Values override:** The `argocd/application.yaml` includes inline Helm values that override `values.yaml`. Always check both files when understanding configuration.
@@ -796,7 +683,7 @@ helm template music-man ./helm-chart \
 - **Certificate renewal:** Auto-renews 30 days before expiry. Monitor: `kubectl get certificate -n music-man -o jsonpath='{.items[0].status.renewalTime}'`
 
 ### Image Updates
-- **GitHub Actions automation:** Tag releases with `git tag v3.4.5 && git push origin v3.4.5` to trigger:
+- **GitHub Actions automation:** Tag releases with `git tag v3.4.5 && git push --tags` to trigger:
   1. Docker image build
   2. Push to Docker Hub
   3. Update `app.image.tag` in `argocd/application.yaml`
