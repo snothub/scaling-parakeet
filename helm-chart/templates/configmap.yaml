@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: music-man-config
-  namespace: {{ .Values.namespace }}
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
   labels:
-    app: music-man
+    app: {{ .Release.Name }}
 data:
   # Log level configuration
   LOG_LEVEL: {{ .Values.config.logLevel | quote }}

@@ -3,21 +3,21 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ .Values.database.name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    app: music-man
+    app: {{ .Release.Name }}
     component: database
 spec:
   serviceName: {{ .Values.database.name }}
   replicas: 1
   selector:
     matchLabels:
-      app: music-man
+      app: {{ .Release.Name }}
       component: database
   template:
     metadata:
       labels:
-        app: music-man
+        app: {{ .Release.Name }}
         component: database
     spec:
       containers:
@@ -32,17 +32,17 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
-              name: music-man-config
+              name: {{ .Release.Name }}-config
               key: DB_USER
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: music-man-secrets
+              name: {{ .Release.Name }}-secrets
               key: POSTGRES_PASSWORD
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
-              name: music-man-config
+              name: {{ .Release.Name }}-config
               key: DB_NAME
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
@@ -60,7 +60,7 @@ spec:
   - metadata:
       name: postgres-data
       labels:
-        app: music-man
+        app: {{ .Release.Name }}
         component: database
     spec:
       accessModes:

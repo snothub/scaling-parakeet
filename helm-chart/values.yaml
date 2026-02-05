@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 
 # Global settings
-namespace: music-man
 imagePullPolicy: IfNotPresent
 
 # Unified app (frontend + backend)

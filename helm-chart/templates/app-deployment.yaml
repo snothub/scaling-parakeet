@@ -3,20 +3,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.app.name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
-    app: music-man
+    app: {{ .Release.Name }}
     component: app
 spec:
   replicas: {{ .Values.app.replicaCount }}
   selector:
     matchLabels:
-      app: music-man
+      app: {{ .Release.Name }}
       component: app
   template:
     metadata:
       labels:
-        app: music-man
+        app: {{ .Release.Name }}
         component: app
     spec:
       initContainers:
@@ -44,7 +44,7 @@ spec:
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
-              name: music-man-secrets
+              name: {{ .Release.Name }}-secrets
               key: DATABASE_URL
         - name: VITE_SPOTIFY_CLIENT_ID
           value: "{{ .Values.app.env.spotifyClientId }}"
