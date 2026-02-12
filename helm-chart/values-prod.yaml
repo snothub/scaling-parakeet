@@ -9,11 +9,11 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-  - host: music-man.gleeze.com
+  - host: music-man.mywire.org
     paths:
     - path: /
       pathType: Prefix
   tls:
   - secretName: music-man-tls
     hosts:
-    - music-man.gleeze.com
+    - music-man.mywire.org
