@@ -1,6 +1,6 @@
 app:
   image:
-    tag: v1.0.0
+    tag: v3.4.14
 
 # Ingress configuration (optional)
 ingress:
