@@ -1,0 +1,19 @@
+app:
+  image:
+    tag: v1.0.0
+
+# Ingress configuration (optional)
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+  - host: music-man.gleeze.com
+    paths:
+    - path: /
+      pathType: Prefix
+  tls:
+  - secretName: music-man-tls
+    hosts:
+    - music-man.gleeze.com
