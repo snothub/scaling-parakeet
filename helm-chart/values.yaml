@@ -88,21 +88,20 @@ database:
     initialDelaySeconds: 5
     periodSeconds: 5
 
-# Ingress configuration (optional)
 ingress:
   enabled: true
   className: traefik
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-  - host: music-man.mywire.org
+  - host: example.com
     paths:
     - path: /
       pathType: Prefix
   tls:
   - secretName: music-man-tls
     hosts:
-    - music-man.mywire.org
+    - example.com
 
 # Secrets
 secrets:
