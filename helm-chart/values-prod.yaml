@@ -9,11 +9,11 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-  - host: music-man.mywire.org
+  - host: musicman.forteapps.net
     paths:
     - path: /
       pathType: Prefix
   tls:
   - secretName: music-man-tls
     hosts:
-    - music-man.mywire.org
+    - musicman.forteapps.net
