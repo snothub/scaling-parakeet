@@ -106,7 +106,7 @@ ingress:
 # Secrets
 secrets:
   # Database password (override with --set or in values-prod.yaml)
-  databasePassword: "changeme-insecure-default"
+  databasePassword: "change-me-in-production"
   # JWT secret for backend (not used currently but included for future)
   jwtSecret: "changeme-insecure-default"
 
