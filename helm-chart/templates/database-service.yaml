@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.database.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}
+    {{- include "app.labels" . | nindent 4 }}
     component: database
 spec:
   type: {{ .Values.database.service.type }}
@@ -16,6 +16,6 @@ spec:
     protocol: TCP
     name: postgresql
   selector:
-    app: {{ .Release.Name }}
+    {{- include "app.selectorLabels" . | nindent 4 }}
     component: database
 {{- end }}

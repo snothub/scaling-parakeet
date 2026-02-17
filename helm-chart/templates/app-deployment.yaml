@@ -5,19 +5,16 @@ metadata:
   name: {{ .Values.app.name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}
-    component: app
+    {{- include "app.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.app.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
-      component: app
+      {{- include "app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
-        component: app
+        {{- include "app.selectorLabels" . | nindent 8 }}
     spec:
       initContainers:
       - name: wait-for-db

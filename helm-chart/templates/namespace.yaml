@@ -3,6 +3,4 @@ kind: Namespace
 metadata:
   name: {{ .Release.Namespace }}
   labels:
-    app: {{ .Release.Name }}
-    istio-injection: disabled
-    managed-by: helm
+    {{- include "app.labels" . | nindent 4 }}
