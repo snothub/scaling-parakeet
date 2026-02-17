@@ -6,15 +6,18 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
+    component: app
 spec:
   replicas: {{ .Values.app.replicaCount }}
   selector:
     matchLabels:
       {{- include "app.selectorLabels" . | nindent 6 }}
+      component: app
   template:
     metadata:
       labels:
         {{- include "app.selectorLabels" . | nindent 8 }}
+        component: app
     spec:
       initContainers:
       - name: wait-for-db
